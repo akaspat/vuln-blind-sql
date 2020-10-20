@@ -45,13 +45,16 @@ def show_answer(answer):
 #vuln zone
 def check(cur, id):
     query = "SELECT * FROM users WHERE id={0}".format(id)
-    cur.execute(query)
-    print(cur.fetchall())
+    answer = cur.execute(query).fetchall()
+    if (len(answer)):
+        print('User exist')
+    else:
+        print('User do not exist')
 
 
-def run(cur):
-    id = input('Input user id: ')
-    check(cur, id)
+def run(_cur):
+    _id = input('Input user id: ')
+    check(_cur, _id)
 
 
 if __name__ == '__main__':
