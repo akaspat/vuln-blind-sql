@@ -25,7 +25,7 @@ def initDB(cur):
         print('Start insertion data...')
 
     #insert users info
-    cur.executemany("INSERT INTO users VALUES (?,?,?)", users)
+    cur.executemany("INSERT INTO users VALUES (?, ?, ?)", users)
     print('End insertion data')
     print('DB is init')
 
@@ -42,14 +42,14 @@ def show_answer(answer):
         print('password:', u[2])
         print('-------------------------')
 
+
 #vuln zone
-def check(cur, id):
-    query = "SELECT * FROM users WHERE id={0}".format(id)
-    answer = cur.execute(query).fetchall()
-    if (len(answer)):
-        print('User exist')
-    else:
-        print('User do not exist')
+def check(_cur, _id):
+    ids = _cur.execute("SELECT id FROM users").fetchall()
+    for element in ids:
+        if str(_id) == str(element[0]):
+            print('User exist')
+            break
 
 
 def run(_cur):
@@ -60,7 +60,6 @@ def run(_cur):
 if __name__ == '__main__':
     cur = create_db_and_get_cursor("veryImportant.db")
     initDB(cur)
-    show_all_users(cur)
     while True:
         run(cur)
 
