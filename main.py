@@ -8,6 +8,10 @@ users = [
     ('4', 'FoXX', 'mysecret'),
 ]
 
+blacklist = ['or', 'and', 'select', '||', 'union', 'delete',
+             'drop', 'update', '==', '=', '--', '#', '\'', '\"',
+             'create', ' ']
+
 def create_db_and_get_cursor(filename):
     conn = sqlite3.connect(filename)
     return conn.cursor()
@@ -45,12 +49,37 @@ def show_answer(answer):
 
 #vuln zone
 def check(_cur, _id):
+    result = True
+
     ids = _cur.execute("SELECT id FROM users").fetchall()
     for element in ids:
         if str(_id) == str(element[0]):
-            print('User exist')
+            print('User exists')
             break
 
+    # to lowercase
+    _id = _id.lower()
+
+    # remove symbols from blacklist
+    for black_element in blacklist:
+        if black_element in _id:
+            _id = _id.replace(black_element, "")
+            result = False
+
+    # remove alphabet symbols. allow only digits
+    for c in _id:
+        if c.isalpha():
+            _id = _id.replace(c, "")
+            result = False
+
+    # check is empty
+    if not len(_id):
+        result = False
+
+    if result:
+        answer = _cur.execute("SELECT * FROM users WHERE id={0}".format(_id)).fetchall()
+        if len(answer):
+            print('User exists')
 
 def run(_cur):
     _id = input('Input user id: ')
